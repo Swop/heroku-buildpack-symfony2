@@ -1,0 +1,62 @@
+#!/bin/bash
+
+set -e
+
+node_version="0.6.18"
+
+#if [ "$AWS_ID" == "" ]; then
+#  echo "must set AWS_ID"
+#  exit 1
+#fi
+
+#if [ "$AWS_SECRET" == "" ]; then
+#  echo "must set AWS_SECRET"
+#  exit 1
+#fi
+
+#if [ "$S3_BUCKET" == "" ]; then
+#  echo "must set S3_BUCKET"
+#  exit 1
+#fi
+
+old_pwd="$(pwd)"
+
+basedir="$( cd -P "$( dirname "$0" )" && pwd )"
+
+# make a temp directory
+tempdir="$( mktemp -t node_XXXX )"
+
+echo "Temp Dir : $tempdir"
+
+rm -rf $tempdir
+mkdir -p $tempdir
+cd $tempdir
+
+echo "Download Node ${node_version}..."
+curl -sL http://nodejs.org/dist/v${node_version}/node-v${node_version}.tar.gz -o node.tar.gz
+
+echo "Extract Node ${node_version}..."
+tar xzf node.tar.gz
+
+cd node-v${node_version}
+
+# build and package nodejs for heroku
+echo "Use vulcan to build Node for Heroku instance..."
+vulcan build -v -o $tempdir/node-${node_version}-heroku.tar.gz
+
+# upload nodejs to s3
+#$basedir/aws/s3 put $S3_BUCKET \
+#  nodejs-${node_version}.tgz $tempdir/node-${node_version}.tgz
+
+cd tools/scons
+
+echo "Package scons..."
+scons_version=$(ls | grep "scons-local" | cut -d- -f3)
+tar czvf $tempdir/scons-${scons_version}-heroku.tar.gz *
+
+# upload scons to s3
+#$basedir/aws/s3 put $S3_BUCKET \
+#  scons-${scons_version}.tgz $tempdir/scons-${scons_version}.tgz
+
+cd $old_pwd
+echo "Done!"
