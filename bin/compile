@@ -293,7 +293,7 @@ if [ -d www/vendor ]; then
     find www/vendor -name .git -type d | xargs rm -rf
 fi
 
-# Sets the debug flag depending on Sf2 env (declared at the begeining of the file)
+# Sets the debug flag depending on Sf2 env (declared at the beginning of the file)
 SF_DEBUG="--no-debug"
 
 # Deploying assets
