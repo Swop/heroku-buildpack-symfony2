@@ -13,4 +13,3 @@ config_vars:
 default_process_types:
   web: sh boot.sh
 EOF
-
