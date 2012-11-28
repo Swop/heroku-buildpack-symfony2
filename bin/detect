@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+#                    Symfony2 Heroku Buildpack                    
+# Main contributor: Sylvain Mauduit (@Swop) <swop@swop.io>
+
+if [ -f $1/web/app.php ]; then
+  echo "Symfony2" && exit 0
+else
+  echo "no" && exit 1
+fi
+
