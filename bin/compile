@@ -68,7 +68,7 @@ run_npm() {
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
     echo " !     Failed to $command dependencies with npm"
     exit 1
-  fi  
+  fi
 }
 
 # ----PRE-INSTALL ACTIONS-----------------------------------------------
@@ -121,7 +121,7 @@ fi
 #  rm -rf $DIR
 #  if [ -d $CACHE_DIR/$DIR ]; then
 #    cp -r $CACHE_DIR/$DIR $DIR
-#  fi  
+#  fi
 #done
 
 # ----INSTALL SERVICES-----------------------------------------------------
