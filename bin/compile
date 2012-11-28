@@ -166,14 +166,10 @@ fi
 cp $NEWRELIC_PATH/agent/newrelic-20090626.so $PHP_PATH/ext/
 cp ${PHP_PATH}/lib/php/extensions/no-debug-non-zts-20090626/sundown.so $PHP_PATH/ext/
 
-# add php.ini conf
-#erb scripts/newrelic.ini.erb >> ${BUILD_DIR}/$PHP_PATH/php.ini
-# add daemon
-#cp $NEWRELIC_PATH/newrelic-daemon.x64 ${BUILD_DIR}/$NEWRELIC_PATH/
-# add newrlic.cfg
-#erb scripts/newrelic.cfg.template.erb > $NEWRELIC_PATH/newrelic.cfg
-
-
+echo "------------> Adding the sundown extension in the conf"
+cd ${BUILD_DIR}
+echo "extension_dir=/app/${PHP_PATH}/ext" >> $PHP_PATH/php.ini
+echo "extension=sundown.so" >> $PHP_PATH/php.ini
 
 # ----Node--------------------------------
 echo "-----> Installing Node"
