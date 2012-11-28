@@ -9,6 +9,7 @@ cat <<EOF
 ---
 config_vars:
   PATH: /app/vendor/node/bin:/app/node_modules/.bin:/app/vendor/nginx/sbin:/app/vendor/php/bin:/app/vendor/php/sbin:/usr/local/bin:/usr/bin:/bin
+  LD_LIBRARY_PATH: /app/vendor/php/icu/lib:/app/vendor/php/ext
 default_process_types:
   web: sh boot.sh
 EOF
