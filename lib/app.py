@@ -1,5 +1,5 @@
 from log import Logger
-import subprocess, os
+import subprocess, os, shutil
 
 def singleton(cls):
     """Return a singleton of the class
@@ -28,10 +28,10 @@ class App:
 
         self.logger.log("Create write-able cache directory")
         if os.path.isdir(self._app_dir+'/cache'):
-            os.rmdir(self._app_dir+'/cache')
+            shutil.rmtree(self._app_dir+'/cache')
 
         if os.path.isdir('/tmp/sf-cache'):
-            os.rmdir('/tmp/sf-cache')
+            shutil.rmtree('/tmp/sf-cache')
         
         os.mkdir('/tmp/sf-cache')
         os.symlink('/tmp/sf-cache', self._app_dir+'/cache')

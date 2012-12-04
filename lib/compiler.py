@@ -228,7 +228,7 @@ class Compiler:
         if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
           self.logger.log("Previous installed vendors founded in cache folder", 1)
           if os.path.isdir('www/vendor'):
-            os.rmdir('www/vendor')
+            shutil.rmtree('www/vendor')
           shutil.copytree(self._bp.cache_dir+'/www/vendor', 'www/vendor')
           
         git_dir_origin = None      
@@ -243,6 +243,7 @@ class Compiler:
 
         os.chdir(self._bp.build_dir+'/www')
         self.logger.log('Install Composer dependencies', 1)
+        sys.stdout.flush()
         proc = subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
         proc.wait()
 
@@ -256,20 +257,23 @@ class Compiler:
         # Store installed vendors into cache
         self.logger.log("Store vendors in cache folder for next compilation", 1)
         if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
-          os.rmdir(self._bp.cache_dir+'/www/vendor')
+          shutil.rmtree(self._bp.cache_dir+'/www/vendor')
           shutil.copytree('/www/vendor', self._bp.cache_dir+'/www/vendor')
       
       self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
+        sys.stdout.flush()
         proc = subprocess.Popen(['find', 'www/vendor', '-name', '.git', '-type', 'd'], stdout=subprocess.PIPE)
         for line in proc.stdout:
-          os.rmdir(line.rstrip())
+          shutil.rmtree(line.rstrip())
         proc.wait()
 
       self.logger.log('Install assets')
+      sys.stdout.flush()
       proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+env], env=myenv)
       proc.wait()
       self.logger.log('Process Assetic dump')
+      sys.stdout.flush()
       proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+env], env=myenv)
       proc.wait()
 
