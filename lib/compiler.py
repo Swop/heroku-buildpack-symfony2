@@ -175,7 +175,7 @@ class Compiler:
       self.logger.log("Enabled PHP extensions")
       self.logger.increase_indentation()
 
-      f= open('vendor/php/php.ini', 'a')
+      f = open('vendor/php/php.ini', 'a')
       f.write('extension_dir=/app/vendor/php/ext\n')
       self.logger.log("NewRelic")
       subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.ini.template.erb'], stdout=conffile)
@@ -223,34 +223,41 @@ class Compiler:
       # check if we have Composer dependencies and vendors are not bundled
       if os.path.isfile('www/composer.json'):
         self.logger.log("Composer")
+
+        # Use cache to restopre vendors
+        if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
+          self.logger.log("Previous installed vendors founded in cache folder", 1)
+          if os.path.isdir('www/vendor'):
+            os.rmdir('www/vendor')
+          shutil.copytree(self._bp.cache_dir+'/www/vendor', 'www/vendor')
           
         git_dir_origin = None      
         if 'GIT_DIR' in myenv:
           git_dir_origin = myenv['GIT_DIR']
           del myenv['GIT_DIR']
         
-        self.logger.log("Download Composer PHAR script...")
+        self.logger.log("Download Composer PHAR script...", 1)
         composer_url = 'http://getcomposer.org/composer.phar'
         urllib.urlretrieve(composer_url, 'www/composer.phar', self.print_progression)
         print
 
-        # TODO Use cache to restopre vendor
-        if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
-          if os.path.isdir('www/vendor'):
-            os.rmdir('www/vendor')
-          self._bp.cache_dir
-
         os.chdir(self._bp.build_dir+'/www')
-        self.logger.log('Install Composer dependencies')
+        self.logger.log('Install Composer dependencies', 1)
         proc = subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
         proc.wait()
 
         os.chdir(self._bp.build_dir)
 
-        self.logger.log('Delete Composer PHAR script')
+        self.logger.log('Delete Composer PHAR script', 1)
         os.remove('www/composer.phar') 
 
         #export GIT_DIR=$GIT_DIR_ORIG
+
+        # Store installed vendors into cache
+        self.logger.log("Store vendors in cache folder for next compilation", 1)
+        if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
+          os.rmdir(self._bp.cache_dir+'/www/vendor')
+          shutil.copytree('/www/vendor', self._bp.cache_dir+'/www/vendor')
       
       self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
