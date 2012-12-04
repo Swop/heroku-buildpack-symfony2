@@ -39,7 +39,6 @@ class Compiler:
       sys.exit(1)
 
     def isolate_app_files(self):
-      env = 'prod'
       self.logger.increase_indentation()
 
       os.chdir(self._bp.build_dir)
@@ -53,10 +52,10 @@ class Compiler:
 
       # keep conf folder
       if os.path.isdir('www/app/heroku'):
-        if os.path.isdir('www/app/heroku/'+env+'/conf'):
-            shutil.copytree('www/app/heroku/'+env+'/conf', './conf')
+        if os.path.isdir('www/app/heroku/'+self._bp.sf_env+'/conf'):
+            shutil.copytree('www/app/heroku/'+self._bp.sf_env+'/conf', './conf')
         else:
-          self.logger.log('No Heroku conf folder found for Sf env '+env+'. Abording...')
+          self.logger.log('No Heroku conf folder found for Sf env '+self._bp.sf_env+'. Abording...')
           sys.exit(1)
         shutil.rmtree('www/app/heroku')
 
@@ -270,11 +269,11 @@ class Compiler:
 
       self.logger.log('Install assets')
       sys.stdout.flush()
-      proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+env], env=myenv)
+      proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
       self.logger.log('Process Assetic dump')
       sys.stdout.flush()
-      proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+env], env=myenv)
+      proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
 
       self.logger.decrease_indentation()

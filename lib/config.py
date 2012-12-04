@@ -1,3 +1,5 @@
+import os
+
 class BuildParameters:
     """Build parameters storage class
     This class store the build parameters and other info used for the building process
@@ -17,6 +19,12 @@ class BuildParameters:
         self._bin_dir = folders['bin_dir']
         self._lp_dir = folders['lp_dir']
 
+        my_env = dict(os.environ)
+        if 'SF_ENV' in my_env:
+            self._sf_env = my_env['SF_ENV']
+        else
+            self._sf_env = 'prod'
+
     @property
     def build_dir(self):
         return self._build_dir
@@ -32,6 +40,10 @@ class BuildParameters:
     @property
     def lp_dir(self):
         return self._lp_dir
+
+    @property
+    def sf_env(self):
+        return self._sf_env
 
     def str(self):
         return 'build_dir: {}\ncache_dir: {}\nbin_dir: {}\nlp_dir: {}'.format(
