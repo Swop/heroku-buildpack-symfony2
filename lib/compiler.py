@@ -186,8 +186,7 @@ class Compiler:
         self.logger.log('A php.ini already exists in /app/vendor/php so cannot apply the hack for our conf')
         sys.exit(1)
       if not os.path.isdir('/app/vendor/php'):
-        self.mkdir_p('/app/vendor/php')
-      os.symlink(self._bp.build_dir+'/vendor/php/php.ini', '/app/vendor/php/php.ini')
+        os.symlink(self._bp.build_dir+'/vendor/php', '/app/vendor/php')
 
       myenv = dict(os.environ)
 
@@ -225,9 +224,10 @@ class Compiler:
         urllib.urlretrieve(composer_url, 'www/composer.phar', self.print_progression)
         print
 
-        os.chdir('www')
+        os.chdir(self._bp.build_dir+'/www')
         self.logger.log('Install Composer dependencies')
-        subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
+        proc = subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
+        proc.wait()
 
         os.chdir(self._bp.build_dir)
 
@@ -243,7 +243,7 @@ class Compiler:
           #the real code does filtering here
           print "test:", line.rstrip()
         #find www/vendor -name .git -type d | xargs rm -rf
-      
+      proc.wait()
 
 
     def print_progression(self, transferred_blocks, block_size, total_size):
