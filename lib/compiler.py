@@ -33,6 +33,10 @@ class Compiler:
       self.isolate_app_files()
       self.install_vendors()
       self.install_application()
+      self.install_bootscripts()
+
+      # To not let Heroku accept the push
+      sys.exit(1)
 
     def isolate_app_files(self):
       env = 'prod'
@@ -128,6 +132,7 @@ class Compiler:
       
       self.logger.log("Install PHP configuration file")
       shutil.copyfile('conf/php-fpm.conf', 'vendor/php/etc/php-fpm.conf')
+      shutil.copyfile('vendor/php/share/php/fpm/status.html', 'status.html')
       shutil.copyfile('conf/php.ini', 'vendor/php/php.ini')
       self.logger.decrease_indentation()
 
@@ -149,6 +154,10 @@ class Compiler:
         tar.close()
         os.remove('newrelic.tar.gz')
         os.chdir(self._bp.build_dir)
+
+      self.logger.log("Install NewRelic configuration file")
+      conffile = open('vendor/newrelic/newrelic.cfg', 'w')
+      subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.cfg.template.erb'], stdout=conffile)
       self.logger.decrease_indentation()
       
       # PHP Extensions
@@ -168,7 +177,8 @@ class Compiler:
 
       f= open('vendor/php/php.ini', 'a')
       f.write('extension_dir=/app/vendor/php/ext\n')
-      #self.logger.log("NewRelic")
+      self.logger.log("NewRelic")
+      subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.ini.template.erb'], stdout=conffile)
       self.logger.log("Sundown")
       f.write('extension=sundown.so\n')
       self.logger.decrease_indentation()
@@ -224,6 +234,12 @@ class Compiler:
         urllib.urlretrieve(composer_url, 'www/composer.phar', self.print_progression)
         print
 
+        # TODO Use cache to restopre vendor
+        if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
+          if os.path.isdir('www/vendor'):
+            os.rmdir('www/vendor')
+          self._bp.cache_dir
+
         os.chdir(self._bp.build_dir+'/www')
         self.logger.log('Install Composer dependencies')
         proc = subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
@@ -236,17 +252,32 @@ class Compiler:
 
         #export GIT_DIR=$GIT_DIR_ORIG
       
-      # Delete sub '.git' folders for each vendor
+      self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
         proc = subprocess.Popen(['find', 'www/vendor', '-name', '.git', '-type', 'd'], stdout=subprocess.PIPE)
         for line in proc.stdout:
-          #the real code does filtering here
-          print "test:", line.rstrip()
-        #find www/vendor -name .git -type d | xargs rm -rf
+          os.rmdir(line.rstrip())
+        proc.wait()
+
+      self.logger.log('Install assets')
+      proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+env], env=myenv)
+      proc.wait()
+      self.logger.log('Process Assetic dump')
+      proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+env], env=myenv)
       proc.wait()
 
-      # To not let Heroku accept the push
-      sys.exit(1)
+      self.logger.decrease_indentation()
+      self.logger.decrease_indentation()
+
+    def install_bootscripts(self):
+      self.logger.increase_indentation()
+      self.logger.log("Install boot & utilities scripts")
+
+      shutil.copytree(self._bp.bin_dir+'/lib', self._bp.bin_dir+'/lib')
+      os.symlink('./lib/sf', './sf')
+
+      self.logger.decrease_indentation()
+
 
 
     def print_progression(self, transferred_blocks, block_size, total_size):
