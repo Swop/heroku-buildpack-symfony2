@@ -245,6 +245,9 @@ class Compiler:
         #find www/vendor -name .git -type d | xargs rm -rf
       proc.wait()
 
+      # To not let Heroku accept the push
+      sys.exit(1)
+
 
     def print_progression(self, transferred_blocks, block_size, total_size):
       if(total_size != -1):
