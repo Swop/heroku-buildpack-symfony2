@@ -96,7 +96,7 @@ class App:
 
         proc_nginx.wait()
         proc_php.wait()
-        os.system("pause")
+        raw_input('press enter to continue...')
 
     def run_sf2_command(self, command):
         subprocess.call('/app/vendor/php/bin/php /app/www/app/console '+command, shell=True)
