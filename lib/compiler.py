@@ -340,7 +340,7 @@ class Compiler:
       self.logger.increase_indentation()
       self.logger.log("Install boot & utilities scripts")
 
-      shutil.copytree(self._bp.bin_dir+'/lib', self._bp.bin_dir+'/lib')
+      shutil.copytree(self._bp.lp_dir+'/lib', self._bp.build_dir+'/lib')
       os.symlink('./lib/sf', './sf')
 
       self.logger.decrease_indentation()
