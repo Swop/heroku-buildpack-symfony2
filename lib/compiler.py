@@ -35,9 +35,6 @@ class Compiler:
       self.install_application()
       self.install_bootscripts()
 
-      # To not let Heroku accept the push
-      sys.exit(1)
-
     def isolate_app_files(self):
       self.logger.increase_indentation()
 
