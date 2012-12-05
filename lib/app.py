@@ -37,8 +37,8 @@ class App:
         os.symlink('/tmp/sf-cache', self._app_dir+'/cache')
 
         self.logger.log("Enabled Sf2 logging system")
-        open(self._app_dir+'logs/prod.log', "a")
-        open(self._app_dir+'logs/dev.log', "a")
+        open(self._app_dir+'/logs/prod.log', "a")
+        open(self._app_dir+'/logs/dev.log', "a")
         sys.stdout.flush()
         proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'logs/prod.log'])
         proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'logs/dev.log'])
