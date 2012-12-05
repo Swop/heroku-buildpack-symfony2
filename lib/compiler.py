@@ -248,6 +248,12 @@ class Compiler:
       if not os.path.isdir('/app/vendor/php'):
         os.symlink(self._bp.build_dir+'/vendor/php', '/app/vendor/php')
 
+      # This is clearly a hack but it allows Node to work during compilation time
+      self.logger.log('Symlink /app/vendor/node (hacky but needed)')
+      if not os.path.isdir('/app/vendor/node'):
+        os.symlink(self._bp.build_dir+'/vendor/node', '/app/vendor/node')
+
+
       myenv = dict(os.environ)
 
       previous_ld_library_path = None
