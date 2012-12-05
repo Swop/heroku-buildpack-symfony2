@@ -99,7 +99,7 @@ class App:
         self.logger.decrease_indentation()
         self.logger.log("Application started!")
 
-    def wait_forever(self)!
+    def wait_forever(self):
         while True:
             time.sleep(10)
 
