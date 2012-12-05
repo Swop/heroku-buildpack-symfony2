@@ -22,7 +22,7 @@ class BuildParameters:
         my_env = dict(os.environ)
         if 'SF_ENV' in my_env:
             self._sf_env = my_env['SF_ENV']
-        else
+        else:
             self._sf_env = 'prod'
 
     @property
