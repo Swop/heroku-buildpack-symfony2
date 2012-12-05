@@ -23,6 +23,7 @@ class App:
         self.logger.log('Hello!')
 
     def launch(self):
+        myenv = dict(os.environ);
         self.logger.log("Launch application")
         self.logger.increase_indentation()
 
@@ -40,8 +41,8 @@ class App:
         open(self._app_dir+'/logs/prod.log', "a")
         open(self._app_dir+'/logs/dev.log', "a")
         sys.stdout.flush()
-        proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'])
-        proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log'])
+        proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'], env=myenv)
+        proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log'], env=myenv)
 
         self.logger.log("Enabled Nginx logging system")
         open('/app/vendor/nginx/logs/access.log', "a")
@@ -52,46 +53,46 @@ class App:
         os.mkdir('scgi_temp')
         os.mkdir('uwsgi_temp')
         sys.stdout.flush()
-        proc_tail_nginx_access = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/access.log'])
-        proc_tail_nginx_error = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/error.log'])
+        proc_tail_nginx_access = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/access.log'], env=myenv)
+        proc_tail_nginx_error = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/error.log'], env=myenv)
 
         self.logger.log("Enabled PHP logging system")
         os.mkdir('/app/vendor/php/log')
         open('/app/vendor/php/log/php-fpm.log', "a")
         sys.stdout.flush()
-        proc_tail_php = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/php-fpm.log'])
+        proc_tail_php = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/php-fpm.log'], env=myenv)
 
         self.logger.log("Enabled NewRelic logging system")
         open('/app/vendor/php/log/newrelic-agent.log', "a")
         open('/app/vendor/php/log/newrelic-daemon.log', "a")
         sys.stdout.flush()
-        proc_tail_newrelic_agent = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-agent.log'])
-        proc_tail_newrelic_daemon = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-daemon.log'])
+        proc_tail_newrelic_agent = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-agent.log'], env=myenv)
+        proc_tail_newrelic_daemon = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-daemon.log'], env=myenv)
 
         self.logger.log("Booting NewRelic")
         sys.stdout.flush()
-        proc_newrelic = subprocess.Popen(['/app/vendor/newrelic/newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'])
+        proc_newrelic = subprocess.Popen(['newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'], env=myenv)
 
         self.logger.log("Booting PHP-FPM")
         sys.stdout.flush()
-        proc_php = subprocess.Popen(['/app/vendor/php/sbin/php-fpm'])
+        proc_php = subprocess.Popen(['php-fpm'], env=myenv)
 
         self.logger.log("Booting Nginx")
         sys.stdout.flush()
-        proc_nginx = subprocess.Popen(['/app/vendor/nginx/sbin/nginx'])
+        proc_nginx = subprocess.Popen(['nginx'], env=myenv)
 
         self.logger.log('Clear application caches')
         sys.stdout.flush()
-        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'])
+        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.log('Warming up the cache')
         sys.stdout.flush()
-        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'])
+        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.decrease_indentation()
         self.logger.log("Application started!")
 
     def run_sf2_command(self, command):
-        subprocess.call('php /app/www/app/console '+command, shell=True)
+        subprocess.call('/app/vendor/php/bin/php /app/www/app/console '+command, shell=True)
