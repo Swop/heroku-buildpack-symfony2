@@ -83,12 +83,12 @@ class App:
 
         self.logger.log('Clear application caches')
         sys.stdout.flush()
-        proc = subprocess.Popen(['/app/vendor/php/bin/php', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'], env=myenv)
+        proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.log('Warming up the cache')
         sys.stdout.flush()
-        proc = subprocess.Popen(['/app/vendor/php/bin/php', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'], env=myenv)
+        proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.decrease_indentation()
