@@ -1,5 +1,5 @@
 from log import Logger
-import subprocess, os, shutil
+import subprocess, os, shutil, sys
 
 def singleton(cls):
     """Return a singleton of the class
