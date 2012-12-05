@@ -40,8 +40,8 @@ class App:
         open(self._app_dir+'/logs/prod.log', "a")
         open(self._app_dir+'/logs/dev.log', "a")
         sys.stdout.flush()
-        proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'logs/prod.log'])
-        proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'logs/dev.log'])
+        proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'])
+        proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log'])
 
         self.logger.log("Enabled Nginx logging system")
         open('/app/vendor/nginx/logs/access.log', "a")
@@ -74,11 +74,11 @@ class App:
 
         self.logger.log("Booting PHP-FPM")
         sys.stdout.flush()
-        proc_php = subprocess.Popen(['php-fpm'])
+        proc_php = subprocess.Popen(['/app/vendor/php/sbin/php-fpm'])
 
         self.logger.log("Booting Nginx")
         sys.stdout.flush()
-        proc_nginx = subprocess.Popen(['nginx'])
+        proc_nginx = subprocess.Popen(['/app/vendor/nginx/sbin/nginx'])
 
         self.logger.log('Clear application caches')
         sys.stdout.flush()
