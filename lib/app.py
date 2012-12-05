@@ -86,10 +86,10 @@ class App:
         sys.stdout.flush()
         proc_nginx = subprocess.Popen(['/app/vendor/nginx/sbin/nginx'], env=myenv)
 
-        self.logger.log('Clear application caches')
-        sys.stdout.flush()
-        proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:clear', '--no-debug', '--env='+sf_env], env=myenv)
-        proc.wait()
+        #self.logger.log('Clear application caches')
+        #sys.stdout.flush()
+        #proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:clear', '--no-debug', '--env='+sf_env], env=myenv)
+        #proc.wait()
 
         self.logger.log('Warming up the cache')
         sys.stdout.flush()
