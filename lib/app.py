@@ -1,5 +1,5 @@
 from log import Logger
-import subprocess, os, shutil, sys
+import subprocess, os, shutil, sys, time
 
 def singleton(cls):
     """Return a singleton of the class
@@ -99,9 +99,9 @@ class App:
         self.logger.decrease_indentation()
         self.logger.log("Application started!")
 
-        proc_nginx.wait()
-        proc_php.wait()
-        raw_input('press enter to continue...')
+    def wait_forever(self)!
+        while True:
+            time.sleep(10)
 
     def run_sf2_command(self, command):
         subprocess.call('/app/vendor/php/bin/php /app/www/app/console '+command, shell=True)
