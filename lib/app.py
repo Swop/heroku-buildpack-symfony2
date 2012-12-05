@@ -71,24 +71,24 @@ class App:
 
         self.logger.log("Booting NewRelic")
         sys.stdout.flush()
-        proc_newrelic = subprocess.Popen(['newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'], env=myenv)
+        proc_newrelic = subprocess.Popen(['/app/vendor/newrelic/newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'], env=myenv)
 
         self.logger.log("Booting PHP-FPM")
         sys.stdout.flush()
-        proc_php = subprocess.Popen(['php-fpm'], env=myenv)
+        proc_php = subprocess.Popen(['/app/vendor/php/sbin/php-fpm'], env=myenv)
 
         self.logger.log("Booting Nginx")
         sys.stdout.flush()
-        proc_nginx = subprocess.Popen(['nginx'], env=myenv)
+        proc_nginx = subprocess.Popen(['/app/vendor/nginx/sbin/nginx'], env=myenv)
 
         self.logger.log('Clear application caches')
         sys.stdout.flush()
-        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'], env=myenv)
+        proc = subprocess.Popen(['/app/vendor/php/bin/php', '/app/www/app/console', 'cache:clear', '--no-debug', '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.log('Warming up the cache')
         sys.stdout.flush()
-        proc = subprocess.Popen(['php', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'], env=myenv)
+        proc = subprocess.Popen(['/app/vendor/php/bin/php', '/app/www/app/console', 'cache:warmup', '--no-interaction',  '--env=prod'], env=myenv)
         proc.wait()
 
         self.logger.decrease_indentation()
