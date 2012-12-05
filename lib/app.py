@@ -61,6 +61,10 @@ class App:
         proc_tail_nginx_access = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/access.log'], env=myenv)
         proc_tail_nginx_error = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/error.log'], env=myenv)
 
+        self.logger.log("Install Nginx configuration file")
+        conffile = open('/app/vendor/nginx/conf/nginx.conf', 'w')
+        subprocess.call(['erb', 'conf/nginx.conf.erb'], stdout=conffile)
+
         self.logger.log("Enabled PHP logging system")
         os.mkdir('/app/vendor/php/log')
         open('/app/vendor/php/log/php-fpm.log', "a")
