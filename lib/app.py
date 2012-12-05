@@ -70,15 +70,15 @@ class App:
 
         self.logger.log("Booting NewRelic")
         sys.stdout.flush()
-        proc_newrelic = subprocess.Popen(['newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'])
+        proc_newrelic = subprocess.Popen(['/app/vendor/newrelic/newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'])
 
         self.logger.log("Booting PHP-FPM")
         sys.stdout.flush()
-        proc_newrelic = subprocess.Popen(['newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'])
+        proc_php = subprocess.Popen(['php-fpm'])
 
         self.logger.log("Booting Nginx")
         sys.stdout.flush()
-        proc_newrelic = subprocess.Popen(['newrelic-daemon.x64', '-c', '/app/vendor/newrelic/newrelic.cfg'])
+        proc_nginx = subprocess.Popen(['nginx'])
 
         self.logger.log('Clear application caches')
         sys.stdout.flush()
