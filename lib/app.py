@@ -94,5 +94,8 @@ class App:
         self.logger.decrease_indentation()
         self.logger.log("Application started!")
 
+        proc_nginx.wait()
+        proc_php.wait()
+
     def run_sf2_command(self, command):
         subprocess.call('/app/vendor/php/bin/php /app/www/app/console '+command, shell=True)
