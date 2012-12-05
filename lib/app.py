@@ -24,8 +24,8 @@ class App:
 
     def launch(self):
         myenv = dict(os.environ);
-        if 'SF_ENV' in my_env:
-            sf_env = my_env['SF_ENV']
+        if 'SF_ENV' in myenv:
+            sf_env = myenv['SF_ENV']
         else:
             sf_env = 'prod'
 
