@@ -1,5 +1,5 @@
 from log import Logger
-import os, errno, shutil, subprocess, urllib, tarfile, sys, re
+import os, errno, shutil, subprocess, urllib, tarfile, sys, re, tempfile
 
 def singleton(cls):
     """Return a singleton of the class
@@ -181,6 +181,57 @@ class Compiler:
       self.logger.log("Sundown")
       f.write('extension=sundown.so\n')
       self.logger.decrease_indentation()
+
+      # NodeJS
+      self.logger.log("Install Node")
+      self.logger.increase_indentation()
+      os.chdir(self._bp.build_dir)
+
+      if not os.path.isdir('vendor/node'):
+        self.mkdir_p('vendor/node')
+        os.chdir('vendor/node')
+
+        self.logger.log("Download Node...")
+        node_version = 0.6.18
+        php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/node-'+node_version+'-heroku.tar.gz'
+        urllib.urlretrieve(php_url, 'node.tar.gz', self.print_progression)
+        print
+        tar = tarfile.open('node.tar.gz')
+        tar.extractall()
+        tar.close()
+        os.remove('node.tar.gz')
+
+      os.chdir(self._bp.build_dir)
+      myenv = dict(os.environ)
+      myenv['PATH'] = self._bp.build_dir+'/vendor/node/bin:'+myenv['PATH']
+      myenv['INCLUDE_PATH'] = self._bp.build_dir+'/vendor/node/include'
+      myenv['CPATH'] = myenv['INCLUDE_PATH']
+      myenv['CPPPATH'] = myenv['INCLUDE_PATH']
+
+      cache_store_dir = self._bp.cache_dir+'/node_modules/'+node_version
+      cache_target_dir = self._bp.build_dir+'node_modules'
+
+      # unpack existing cache
+      if os.path.isdir(cache_store_dir):
+        # move existing node_modules out of the way
+        if os.path.isdir(cache_target_dir):
+          shutil.rmtree(cache_target_dir)
+        # copy the cached node_modules in
+        shutil.move(cache_store_dir, cache_target_dir)
+
+      # install dependencies with npm
+      self.logger.log("Installing Node dependencies")
+      sys.stdout.flush()
+      proc = subprocess.Popen(['npm', 'install'], env=myenv)
+      proc.wait()
+      proc = subprocess.Popen(['npm', 'rebuild'], env=myenv)
+      proc.wait()
+
+      # repack cache with new assets
+      if os.path.isdir(cache_store_dir):
+        shutil.rmtree(cache_store_dir)
+        shutil.move(cache_target_dir, cache_store_dir)
+
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
 
