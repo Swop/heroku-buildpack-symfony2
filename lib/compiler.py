@@ -192,7 +192,7 @@ class Compiler:
         os.chdir('vendor/node')
 
         self.logger.log("Download Node...")
-        node_version = 0.6.18
+        node_version = '0.6.18'
         php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/node-'+node_version+'-heroku.tar.gz'
         urllib.urlretrieve(php_url, 'node.tar.gz', self.print_progression)
         print
