@@ -274,8 +274,18 @@ class Compiler:
         myenv['HEROKU_DATABASE_PORT'] = res.group(4)
         myenv['HEROKU_DATABASE_DB'] = res.group(5)
 
-        myenv['HEROKU_DATABASE_DSN'] = "'pgsql:dbname="+myenv['HEROKU_DATABASE_DB']+";host="+myenv['HEROKU_DATABASE_HOST']+";port="+myenv['HEROKU_DATABASE_PORT']+"'"
-        myenv['HEROKU_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
+        # The following steps are very linked to our application. This will be fixed as soon as possible
+        if(myenv['HEROKU_DATABASE_PORT'] == ''):
+            myenv['HEROKU_DATABASE_PORT'] = 5432
+
+        myenv['SDZ_DATABASE_HOST'] = myenv['SDZ_DATABASE_TEST_HOST'] = myenv['HEROKU_DATABASE_HOST']
+        myenv['SDZ_DATABASE_PORT'] = myenv['SDZ_DATABASE_TEST_PORT'] = myenv['HEROKU_DATABASE_PORT']
+        myenv['SDZ_DATABASE_DB'] = myenv['SDZ_DATABASE_TEST_DB'] = myenv['HEROKU_DATABASE_DB']
+        myenv['SDZ_DATABASE_USER'] = myenv['SDZ_DATABASE_TEST_USER'] = myenv['SDZ_DATABASE_SESSION_USER'] = myenv['HEROKU_DATABASE_USER']
+        myenv['SDZ_DATABASE_PASSWORD'] = myenv['SDZ_DATABASE_TEST_PASSWORD'] = myenv['SDZ_DATABASE_SESSION_PASSWORD'] = myenv['HEROKU_DATABASE_PASSWORD']
+
+        myenv['SDZ_DATABASE_SESSION_DSN'] = "'pgsql:dbname="+myenv['HEROKU_DATABASE_DB']+";host="+myenv['HEROKU_DATABASE_HOST']+";port="+myenv['HEROKU_DATABASE_PORT']+"'"
+        myenv['SDZ_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
 
       # Composer
       # check if we have Composer dependencies and vendors are not bundled
