@@ -300,6 +300,11 @@ class Compiler:
         print
 
         os.chdir(self._bp.build_dir+'/www')
+
+        #Delete previous parameters.yml file if present
+        if os.path.isfile('app/config/parameters.yml'):
+          os.remove('app/config/parameters.yml')
+
         self.logger.log('Install Composer dependencies', 1)
         sys.stdout.flush()
         proc = subprocess.Popen(['php', 'composer.phar', 'install', '--prefer-source', '--optimize-autoloader', '--no-interaction'], env=myenv)
