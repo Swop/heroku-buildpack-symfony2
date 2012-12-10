@@ -1,4 +1,5 @@
 from log import Logger
+from datetime import datetime
 import os, errno, shutil, subprocess, urllib, tarfile, sys, re, tempfile
 
 def singleton(cls):
@@ -22,6 +23,7 @@ class Compiler:
         """
         self._bp = build_parameters
         self.logger = Logger()
+        self.deploy_date = datetime.today()
 
     def compile(self):
       # Create the BUILD and CACHE directories if they don't exists
@@ -271,6 +273,9 @@ class Compiler:
         myenv['HEROKU_DATABASE_HOST'] = res.group(3)
         myenv['HEROKU_DATABASE_PORT'] = res.group(4)
         myenv['HEROKU_DATABASE_DB'] = res.group(5)
+
+        myenv['HEROKU_DATABASE_DSN'] = "'pgsql:dbname="+myenv['HEROKU_DATABASE_DB']+";host="+myenv['HEROKU_DATABASE_HOST']+";port="+myenv['HEROKU_DATABASE_PORT']+"'"
+        myenv['HEROKU_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
 
       # Composer
       # check if we have Composer dependencies and vendors are not bundled
