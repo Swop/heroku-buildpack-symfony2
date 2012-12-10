@@ -276,7 +276,7 @@ class Compiler:
 
         # The following steps are very linked to our application. This will be fixed as soon as possible
         if(myenv['HEROKU_DATABASE_PORT'] == ''):
-            myenv['HEROKU_DATABASE_PORT'] = 5432
+            myenv['HEROKU_DATABASE_PORT'] = '5432'
 
         myenv['SDZ_DATABASE_HOST'] = myenv['SDZ_DATABASE_TEST_HOST'] = myenv['HEROKU_DATABASE_HOST']
         myenv['SDZ_DATABASE_PORT'] = myenv['SDZ_DATABASE_TEST_PORT'] = myenv['HEROKU_DATABASE_PORT']
