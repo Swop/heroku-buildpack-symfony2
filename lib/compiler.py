@@ -15,11 +15,11 @@ def singleton(cls):
 @singleton
 class Compiler:
     """
-    
-    """    
+
+    """
     def __init__(self, build_parameters):
         """
-        
+
         """
         self._bp = build_parameters
         self.logger = Logger()
@@ -31,7 +31,7 @@ class Compiler:
       self.mkdir_p(self._bp.cache_dir)
 
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
-      
+
       self.isolate_app_files()
       self.install_vendors()
       self.install_application()
@@ -93,7 +93,7 @@ class Compiler:
       if not os.path.isdir('vendor/nginx'):
         self.mkdir_p('vendor/nginx')
         os.chdir('vendor/nginx')
-        
+
         self.logger.log("Download Nginx...")
         nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.0.11-heroku.tar.gz'
         urllib.urlretrieve(nginx_url, 'nginx.tar.gz', self.print_progression)
@@ -103,7 +103,7 @@ class Compiler:
         tar.close()
         os.remove('nginx.tar.gz')
         os.chdir(self._bp.build_dir)
-      
+
       self.logger.log("Install Nginx configuration file")
       conffile = open('conf/nginx.conf', 'w')
       subprocess.call(['erb', 'conf/nginx.conf.erb'], stdout=conffile)
@@ -117,7 +117,7 @@ class Compiler:
       if not os.path.isdir('vendor/php'):
         self.mkdir_p('vendor/php')
         os.chdir('vendor/php')
-        
+
         self.logger.log("Download PHP...")
         php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.10-with-fpm-sundown-heroku.tar.gz'
         urllib.urlretrieve(php_url, 'php.tar.gz', self.print_progression)
@@ -127,7 +127,7 @@ class Compiler:
         tar.close()
         os.remove('php.tar.gz')
         os.chdir(self._bp.build_dir)
-      
+
       self.logger.log("Install PHP configuration file")
       shutil.copyfile('conf/php-fpm.conf', 'vendor/php/etc/php-fpm.conf')
       shutil.copyfile('vendor/php/share/php/fpm/status.html', 'status.html')
@@ -142,7 +142,7 @@ class Compiler:
       if not os.path.isdir('vendor/newrelic'):
         self.mkdir_p('vendor/newrelic')
         os.chdir('vendor/newrelic')
-        
+
         self.logger.log("Download NewRelic...")
         newrelic_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/newrelic-php5-2.7.5.64-linux.tar.gz'
         urllib.urlretrieve(newrelic_url, 'newrelic.tar.gz', self.print_progression)
@@ -157,7 +157,7 @@ class Compiler:
       conffile = open('vendor/newrelic/newrelic.cfg', 'w')
       subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.cfg.template.erb'], stdout=conffile)
       self.logger.decrease_indentation()
-      
+
       # PHP Extensions
       self.logger.log("Install PHP extensions")
       self.logger.increase_indentation()
@@ -169,7 +169,7 @@ class Compiler:
       self.logger.log("Sundown")
       shutil.copyfile('vendor/php/lib/php/extensions/no-debug-non-zts-20090626/sundown.so', 'vendor/php/ext/sundown.so')
       self.logger.decrease_indentation()
-      
+
       self.logger.log("Enabled PHP extensions")
       self.logger.increase_indentation()
 
@@ -218,13 +218,15 @@ class Compiler:
         # copy the cached node_modules in
         shutil.move(cache_store_dir, cache_target_dir)
 
-      # install dependencies with npm
-      self.logger.log("Installing Node dependencies")
-      sys.stdout.flush()
-      proc = subprocess.Popen(['npm', 'install'], env=myenv)
-      proc.wait()
-      proc = subprocess.Popen(['npm', 'rebuild'], env=myenv)
-      proc.wait()
+      os.chdir(self._bp.build_dir)
+      if os.path.isfile('package.json'):
+        # install dependencies with npm
+        self.logger.log("Installing Node dependencies")
+        sys.stdout.flush()
+        proc = subprocess.Popen(['npm', 'install'], env=myenv)
+        proc.wait()
+        proc = subprocess.Popen(['npm', 'rebuild'], env=myenv)
+        proc.wait()
 
       # repack cache with new assets
       if os.path.isdir(cache_store_dir):
@@ -298,12 +300,12 @@ class Compiler:
           if os.path.isdir('www/vendor'):
             shutil.rmtree('www/vendor')
           shutil.copytree(self._bp.cache_dir+'/www/vendor', 'www/vendor')
-          
-        git_dir_origin = None      
+
+        git_dir_origin = None
         if 'GIT_DIR' in myenv:
           git_dir_origin = myenv['GIT_DIR']
           del myenv['GIT_DIR']
-        
+
         self.logger.log("Download Composer PHAR script...", 1)
         composer_url = 'http://getcomposer.org/composer.phar'
         urllib.urlretrieve(composer_url, 'www/composer.phar', self.print_progression)
@@ -323,7 +325,7 @@ class Compiler:
         os.chdir(self._bp.build_dir)
 
         self.logger.log('Delete Composer PHAR script', 1)
-        os.remove('www/composer.phar') 
+        os.remove('www/composer.phar')
 
         #export GIT_DIR=$GIT_DIR_ORIG
 
@@ -332,7 +334,7 @@ class Compiler:
         if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
           shutil.rmtree(self._bp.cache_dir+'/www/vendor')
           shutil.copytree('/www/vendor', self._bp.cache_dir+'/www/vendor')
-      
+
       self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
         sys.stdout.flush()
