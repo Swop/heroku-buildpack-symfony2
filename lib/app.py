@@ -48,7 +48,7 @@ class App:
         sys.stdout.flush()
         proc_tail_sf2logs_prod = subprocess.Popen(
             #['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'],
-            'tail -F -n 0'+self._app_dir+'/logs/prod.log',
+            'tail -F -n 0 '+self._app_dir+'/logs/prod.log',
             env=myenv,
             shell=True,
             bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
@@ -65,7 +65,7 @@ class App:
 
         proc_tail_sf2logs_dev = subprocess.Popen(
             #['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log']
-            'tail -F -n 0'+self._app_dir+'/logs/dev.log',
+            'tail -F -n 0 '+self._app_dir+'/logs/dev.log',
             env=myenv,
             shell=True,
             bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
