@@ -38,7 +38,7 @@ class App:
 
         if os.path.isdir('/tmp/sf-cache'):
             shutil.rmtree('/tmp/sf-cache')
-        
+
         os.mkdir('/tmp/sf-cache')
         os.symlink('/tmp/sf-cache', self._app_dir+'/cache')
 
@@ -46,11 +46,37 @@ class App:
         open(self._app_dir+'/logs/prod.log', "a")
         open(self._app_dir+'/logs/dev.log', "a")
         sys.stdout.flush()
-        proc_tail_sf2logs_prod = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_sf2logs_prod_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[Symfony] \\1/g'], stdin=proc_tail_sf2logs_prod.stdout)
+        proc_tail_sf2logs_prod = subprocess.Popen(
+            #['tail', '-F', '-n', '0', self._app_dir+'/logs/prod.log'],
+            'tail -F -n 0'+self._app_dir+'/logs/prod.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_sf2logs_prod_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[Symfony] \\1/g'],
+            env=myenv,
+            #shell=True,
+            #bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stdin=proc_tail_sf2logs_prod.stdout
+        )
 
-        proc_tail_sf2logs_dev = subprocess.Popen(['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_sf2logs_dev_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[Symfony] \\1/g'], stdin=proc_tail_sf2logs_prod.stdout)
+        proc_tail_sf2logs_dev = subprocess.Popen(
+            #['tail', '-F', '-n', '0', self._app_dir+'/logs/dev.log']
+            'tail -F -n 0'+self._app_dir+'/logs/dev.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_sf2logs_dev_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[Symfony] \\1/g'],
+            env=myenv,
+            stdin=proc_tail_sf2logs_prod.stdout
+        )
 
         self.logger.log("Enabled Nginx logging system")
         open('/app/vendor/nginx/logs/access.log', "a")
@@ -61,10 +87,33 @@ class App:
         os.mkdir('scgi_temp')
         os.mkdir('uwsgi_temp')
         sys.stdout.flush()
-        proc_tail_nginx_access = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/access.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_nginx_access_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[Nginx access] \\1/g'], stdin=proc_tail_nginx_access.stdout)
-        proc_tail_nginx_error = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/error.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_nginx_error_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[Nginx error] \\1/g'], stdin=proc_tail_nginx_error.stdout)
+        proc_tail_nginx_access = subprocess.Popen(
+            #['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/access.log'],
+            'tail -F -n 0 /app/vendor/nginx/logs/access.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_nginx_access_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[Nginx access] \\1/g'],
+            stdin=proc_tail_nginx_access.stdout
+        )
+
+        proc_tail_nginx_error = subprocess.Popen(
+            #['tail', '-F', '-n', '0', '/app/vendor/nginx/logs/error.log'],
+            'tail -F -n 0 /app/vendor/nginx/logs/error.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_nginx_error_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[Nginx error] \\1/g'],
+            stdin=proc_tail_nginx_error.stdout
+        )
 
         self.logger.log("Install Nginx configuration file")
         conffile = open('/app/vendor/nginx/conf/nginx.conf', 'w')
@@ -74,17 +123,51 @@ class App:
         os.mkdir('/app/vendor/php/log')
         open('/app/vendor/php/log/php-fpm.log', "a")
         sys.stdout.flush()
-        proc_tail_php = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/php-fpm.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_php_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[PHP] \\1/g'], stdin=proc_tail_php.stdout)
+        proc_tail_php = subprocess.Popen(
+            #['tail', '-F', '-n', '0', '/app/vendor/php/log/php-fpm.log'],
+            'tail -F -n 0 /app/vendor/php/log/php-fpm.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_php_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[PHP] \\1/g'],
+            stdin=proc_tail_php.stdout
+        )
 
         self.logger.log("Enabled NewRelic logging system")
         open('/app/vendor/php/log/newrelic-agent.log', "a")
         open('/app/vendor/php/log/newrelic-daemon.log', "a")
         sys.stdout.flush()
-        proc_tail_newrelic_agent = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-agent.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_newrelic_agent_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[NewRelic agent] \\1/g'], stdin=proc_tail_newrelic_agent.stdout)
-        proc_tail_newrelic_daemon = subprocess.Popen(['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-daemon.log'], env=myenv, stdout=subprocess.PIPE)
-        proc_tail_newrelic_daemon_sed = subprocess.Popen(['sed', '-e', 's/\(.*\)/[NewRelic daemon] \\1/g'], stdin=proc_tail_newrelic_daemon.stdout)
+        proc_tail_newrelic_agent = subprocess.Popen(
+            #['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-agent.log'],
+            'tail -F -n 0 /app/vendor/php/log/newrelic-agent.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_newrelic_agent_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[NewRelic agent] \\1/g'],
+            stdin=proc_tail_newrelic_agent.stdout
+        )
+
+        proc_tail_newrelic_daemon = subprocess.Popen(
+            #['tail', '-F', '-n', '0', '/app/vendor/php/log/newrelic-daemon.log'],
+            'tail -F -n 0 /app/vendor/php/log/newrelic-daemon.log',
+            env=myenv,
+            shell=True,
+            bufsize=0,  # 0=unbuffered, 1=line-buffered, else buffer-size
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE
+        )
+        proc_tail_newrelic_daemon_sed = subprocess.Popen(
+            ['sed', '-e', 's/\(.*\)/[NewRelic daemon] \\1/g'],
+            stdin=proc_tail_newrelic_daemon.stdout
+        )
 
         self.logger.log("Booting NewRelic")
         sys.stdout.flush()
