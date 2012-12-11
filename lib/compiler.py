@@ -285,7 +285,7 @@ class Compiler:
         myenv['SDZ_DATABASE_PASSWORD'] = myenv['SDZ_DATABASE_TEST_PASSWORD'] = myenv['SDZ_DATABASE_SESSION_PASSWORD'] = myenv['HEROKU_DATABASE_PASSWORD']
 
         myenv['SDZ_DATABASE_SESSION_DSN'] = "'pgsql:dbname="+myenv['HEROKU_DATABASE_DB']+";host="+myenv['HEROKU_DATABASE_HOST']+";port="+myenv['HEROKU_DATABASE_PORT']+"'"
-        myenv['SDZ_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
+        myenv['HEROKU_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
 
       # Composer
       # check if we have Composer dependencies and vendors are not bundled
