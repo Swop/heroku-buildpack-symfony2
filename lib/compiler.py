@@ -176,7 +176,7 @@ class Compiler:
       f = open('vendor/php/php.ini', 'a')
       f.write('extension_dir=/app/vendor/php/ext\n')
       self.logger.log("NewRelic")
-      subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.ini.template.erb'], stdout=conffile)
+      subprocess.call(['erb', 'vendor/newrelic/scripts/newrelic.ini.template.erb'], stdout=f)
       self.logger.log("Sundown")
       f.write('extension=sundown.so\n')
       self.logger.decrease_indentation()
