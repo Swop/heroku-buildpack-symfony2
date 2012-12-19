@@ -144,7 +144,8 @@ class Compiler:
         os.chdir('vendor/newrelic')
 
         self.logger.log("Download NewRelic...")
-        newrelic_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/newrelic-php5-2.7.5.64-linux.tar.gz'
+        #newrelic_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/newrelic-php5-2.7.5.64-linux.tar.gz'
+        newrelic_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/newrelic-php5-3.1.5.64-linux.tar.gz'
         urllib.urlretrieve(newrelic_url, 'newrelic.tar.gz', self.print_progression)
         print
         tar = tarfile.open('newrelic.tar.gz')
