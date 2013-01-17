@@ -43,11 +43,12 @@ class Compiler:
       os.chdir(self._bp.build_dir)
       self.logger.log("Move application files into 'www' folder")
 
-      self.mkdir_p(self._bp.cache_dir + '/www')
+      self.mkdir_p(self._bp.cache_dir + '/app-dir')
       app_files = os.listdir('.')
       for app_file in app_files:
-        shutil.move(app_file, self._bp.cache_dir + '/www')
-      shutil.move(self._bp.cache_dir + '/www', '.')
+        shutil.move(app_file, self._bp.cache_dir + '/app-dir')
+      shutil.move(self._bp.cache_dir + '/app-dir', '.')
+      os.rename('./app-dir', './www')
 
       # keep conf folder
       if os.path.isdir('www/app/heroku'):
