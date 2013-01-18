@@ -102,7 +102,8 @@ class Compiler:
         os.chdir('vendor/nginx')
 
         self.logger.log("Download Nginx...")
-        nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.0.11-heroku.tar.gz'
+        #nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.0.11-heroku.tar.gz'
+        nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.2.6-heroku.tar.gz'
         urllib.urlretrieve(nginx_url, 'nginx.tar.gz', self.print_progression)
         print
         tar = tarfile.open('nginx.tar.gz')
@@ -126,7 +127,8 @@ class Compiler:
         os.chdir('vendor/php')
 
         self.logger.log("Download PHP...")
-        php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.10-with-fpm-sundown-heroku.tar.gz'
+        #php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.10-with-fpm-sundown-heroku.tar.gz'
+        php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.20-with-fpm-sundown-heroku.tar.gz'
         urllib.urlretrieve(php_url, 'php.tar.gz', self.print_progression)
         print
         tar = tarfile.open('php.tar.gz')
