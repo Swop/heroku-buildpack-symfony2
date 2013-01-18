@@ -32,7 +32,7 @@ class Compiler:
 
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
 
-      self.logger.log("Cache dir path:"+self.cache_dir)
+      self.logger.log("Cache dir path:"+self._bp.cache_dir)
       self.logger.log("Cache dir:")
       self.listdir_fullpath(self._bp.cache_dir)
       sys.exit(1)
