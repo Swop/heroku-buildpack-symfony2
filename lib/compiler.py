@@ -210,7 +210,7 @@ class Compiler:
       myenv['CPPPATH'] = myenv['INCLUDE_PATH']
 
       cache_store_dir = self._bp.cache_dir+'/node_modules/'+node_version
-      cache_target_dir = self._bp.build_dir+'node_modules'
+      cache_target_dir = self._bp.build_dir+'/node_modules'
 
       # unpack existing cache
       if os.path.isdir(cache_store_dir):
