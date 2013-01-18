@@ -233,7 +233,8 @@ class Compiler:
       # repack cache with new assets
       if os.path.isdir(cache_store_dir):
         shutil.rmtree(cache_store_dir)
-        shutil.move(cache_target_dir, cache_store_dir)
+
+      shutil.copytree(cache_target_dir, cache_store_dir)
 
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
