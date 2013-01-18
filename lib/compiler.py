@@ -32,6 +32,11 @@ class Compiler:
 
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
 
+      self.logger.log("Cache dir:")
+      self.listdir_fullpath(self._bp.cache_dir)
+      sys.exit(1)
+
+
       self.isolate_app_files()
       self.install_vendors()
       self.install_application()
@@ -385,3 +390,6 @@ class Compiler:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
           pass
         else: raise
+
+    def listdir_fullpath(self,  d):
+      return [os.path.join(d, f) for f in os.listdir(d)]
