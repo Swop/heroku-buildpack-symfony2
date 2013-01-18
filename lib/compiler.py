@@ -33,9 +33,9 @@ class Compiler:
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
 
       #self.logger.log("Cache dir path:"+self._bp.cache_dir)
-      self.logger.log("Cache dir:")
-      print self.listdir_fullpath(self._bp.cache_dir)
-      sys.exit(1)
+      #self.logger.log("Cache dir:")
+      #print self.listdir_fullpath(self._bp.cache_dir)
+      #sys.exit(1)
 
 
       self.isolate_app_files()
