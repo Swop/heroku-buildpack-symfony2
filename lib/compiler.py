@@ -32,10 +32,10 @@ class Compiler:
 
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
 
-      self.logger.log("Cache dir path:"+self._bp.cache_dir)
-      self.logger.log("Cache dir:")
-      print self.listdir_fullpath(self._bp.cache_dir)
-      sys.exit(1)
+      #self.logger.log("Cache dir path:"+self._bp.cache_dir)
+      #self.logger.log("Cache dir:")
+      #print self.listdir_fullpath(self._bp.cache_dir)
+      #sys.exit(1)
 
 
       self.isolate_app_files()
@@ -342,7 +342,7 @@ class Compiler:
         self.logger.log("Store vendors in cache folder for next compilation", 1)
         if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
           shutil.rmtree(self._bp.cache_dir+'/www/vendor')
-          shutil.copytree('/www/vendor', self._bp.cache_dir+'/www/vendor')
+        shutil.copytree('www/vendor', self._bp.cache_dir+'/www/vendor')
 
       self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
