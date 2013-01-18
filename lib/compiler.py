@@ -34,7 +34,7 @@ class Compiler:
 
       self.logger.log("Cache dir path:"+self._bp.cache_dir)
       self.logger.log("Cache dir:")
-      self.listdir_fullpath(self._bp.cache_dir)
+      print self.listdir_fullpath(self._bp.cache_dir)
       sys.exit(1)
 
 
