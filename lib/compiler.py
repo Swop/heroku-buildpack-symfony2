@@ -1,6 +1,6 @@
 from log import Logger
 from datetime import datetime
-import os, errno, shutil, subprocess, urllib, tarfile, sys, re, tempfile
+import os, errno, shutil, subprocess, urllib, tarfile, sys, re, tempfile, glob
 
 def singleton(cls):
     """Return a singleton of the class
@@ -352,6 +352,13 @@ class Compiler:
       sys.stdout.flush()
       proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
+
+      self.logger.log('Remove app_*.php files')
+      for filename in glob.glob('www/web/app_*.php') :
+        #FIXME temporary omission to keep app_debg.php (activated profiler)
+        if (filename != 'www/web/app_debug.php'):
+          os.remove(filename)
+
 
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
