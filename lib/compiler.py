@@ -32,6 +32,12 @@ class Compiler:
 
       self.logger.log("Symfony2 Heroku Buildpack: Slug compilation start")
 
+      #self.logger.log("Cache dir path:"+self._bp.cache_dir)
+      #self.logger.log("Cache dir:")
+      #print self.listdir_fullpath(self._bp.cache_dir)
+      #sys.exit(1)
+
+
       self.isolate_app_files()
       self.install_vendors()
       self.install_application()
@@ -43,11 +49,12 @@ class Compiler:
       os.chdir(self._bp.build_dir)
       self.logger.log("Move application files into 'www' folder")
 
-      self.mkdir_p(self._bp.cache_dir + '/www')
+      self.mkdir_p(self._bp.cache_dir + '/app-dir')
       app_files = os.listdir('.')
       for app_file in app_files:
-        shutil.move(app_file, self._bp.cache_dir + '/www')
-      shutil.move(self._bp.cache_dir + '/www', '.')
+        shutil.move(app_file, self._bp.cache_dir + '/app-dir')
+      shutil.move(self._bp.cache_dir + '/app-dir', '.')
+      os.rename('./app-dir', './www')
 
       # keep conf folder
       if os.path.isdir('www/app/heroku'):
@@ -95,7 +102,8 @@ class Compiler:
         os.chdir('vendor/nginx')
 
         self.logger.log("Download Nginx...")
-        nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.0.11-heroku.tar.gz'
+        #nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.0.11-heroku.tar.gz'
+        nginx_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/nginx-1.2.6-heroku.tar.gz'
         urllib.urlretrieve(nginx_url, 'nginx.tar.gz', self.print_progression)
         print
         tar = tarfile.open('nginx.tar.gz')
@@ -119,7 +127,8 @@ class Compiler:
         os.chdir('vendor/php')
 
         self.logger.log("Download PHP...")
-        php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.10-with-fpm-sundown-heroku.tar.gz'
+        #php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.10-with-fpm-sundown-heroku.tar.gz'
+        php_url = 'https://simpleit-heroku-builds.s3.amazonaws.com/php-5.3.20-with-fpm-sundown-heroku.tar.gz'
         urllib.urlretrieve(php_url, 'php.tar.gz', self.print_progression)
         print
         tar = tarfile.open('php.tar.gz')
@@ -209,7 +218,7 @@ class Compiler:
       myenv['CPPPATH'] = myenv['INCLUDE_PATH']
 
       cache_store_dir = self._bp.cache_dir+'/node_modules/'+node_version
-      cache_target_dir = self._bp.build_dir+'node_modules'
+      cache_target_dir = self._bp.build_dir+'/node_modules'
 
       # unpack existing cache
       if os.path.isdir(cache_store_dir):
@@ -232,7 +241,8 @@ class Compiler:
       # repack cache with new assets
       if os.path.isdir(cache_store_dir):
         shutil.rmtree(cache_store_dir)
-        shutil.move(cache_target_dir, cache_store_dir)
+
+      shutil.copytree(cache_target_dir, cache_store_dir)
 
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
@@ -334,7 +344,7 @@ class Compiler:
         self.logger.log("Store vendors in cache folder for next compilation", 1)
         if os.path.isdir(self._bp.cache_dir+'/www/vendor'):
           shutil.rmtree(self._bp.cache_dir+'/www/vendor')
-          shutil.copytree('/www/vendor', self._bp.cache_dir+'/www/vendor')
+        shutil.copytree('www/vendor', self._bp.cache_dir+'/www/vendor')
 
       self.logger.log('Delete sub \'.git\' folder for each vendor')
       if os.path.isdir('www/vendor'):
@@ -390,3 +400,6 @@ class Compiler:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
           pass
         else: raise
+
+    def listdir_fullpath(self,  d):
+      return [os.path.join(d, f) for f in os.listdir(d)]
