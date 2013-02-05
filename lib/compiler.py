@@ -350,9 +350,6 @@ class Compiler:
           shutil.rmtree(line.rstrip())
         proc.wait()
 
-      print open(self._bp.build_dir+'/www/app/config/parameters.yml',"rb").read()
-      sys.exit(1)
-
       self.logger.log('Install assets')
       sys.stdout.flush()
       proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+self._bp.sf_env], env=myenv)
@@ -364,6 +361,8 @@ class Compiler:
 
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
+      print open(self._bp.build_dir+'/www/app/config/parameters.yml',"rb").read()
+      sys.exit(1)
 
     def install_bootscripts(self):
       self.logger.increase_indentation()
