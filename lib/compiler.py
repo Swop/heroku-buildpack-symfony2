@@ -348,7 +348,7 @@ class Compiler:
           shutil.rmtree(line.rstrip())
         proc.wait()
 
-      open(self._bp.build_dir+'/www/app/config/parameters.yml',"rb").read()
+      print open(self._bp.build_dir+'/www/app/config/parameters.yml',"rb").read()
       sys.exit(1)
 
       self.logger.log('Install assets')
