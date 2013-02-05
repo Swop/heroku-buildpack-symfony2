@@ -42,7 +42,7 @@ class App:
             shutil.move(self._app_dir+'/cache', '/tmp')
             os.rename('/tmp/cache', '/tmp/sf-cache')
             shutil.rmtree(self._app_dir+'/cache')
-        else
+        else:
             os.mkdir('/tmp/sf-cache')
 
         os.symlink('/tmp/sf-cache', self._app_dir+'/cache')
