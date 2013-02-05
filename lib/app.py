@@ -41,7 +41,6 @@ class App:
         if os.path.isdir(self._app_dir+'/cache'):
             shutil.move(self._app_dir+'/cache', '/tmp')
             os.rename('/tmp/cache', '/tmp/sf-cache')
-            shutil.rmtree(self._app_dir+'/cache')
         else:
             os.mkdir('/tmp/sf-cache')
 
