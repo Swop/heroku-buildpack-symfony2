@@ -293,9 +293,6 @@ class Compiler:
 
       myenv['HEROKU_ASSETS_VERSION'] = self.deploy_date.strftime("%Y%m%d%H%M%S")
 
-      #temporary hack to fix assetic deployment with less
-      #myenv['SDZ_NODE_LIBRARIES'] = self._bp.build_dir + '/node_modules'
-
       # Composer
       # check if we have Composer dependencies and vendors are not bundled
       if os.path.isfile('www/composer.json'):
@@ -361,8 +358,6 @@ class Compiler:
 
       self.logger.decrease_indentation()
       self.logger.decrease_indentation()
-      print open(self._bp.build_dir+'/www/app/config/parameters.yml',"rb").read()
-      sys.exit(1)
 
     def install_bootscripts(self):
       self.logger.increase_indentation()
