@@ -293,8 +293,6 @@ class Compiler:
 
       #temporary hack to fix assetic deployment with less
       myenv['SDZ_NODE_LIBRARIES'] = self._bp.build_dir + '/node_modules'
-      print myenv['SDZ_NODE_LIBRARIES']
-      sys.exit(1)
 
       # Composer
       # check if we have Composer dependencies and vendors are not bundled
@@ -349,6 +347,9 @@ class Compiler:
         for line in proc.stdout:
           shutil.rmtree(line.rstrip())
         proc.wait()
+
+      open(self._bp.build_dir+'www/app/config/parameters.yml',"rb").read()
+      sys.exit(1)
 
       self.logger.log('Install assets')
       sys.stdout.flush()
