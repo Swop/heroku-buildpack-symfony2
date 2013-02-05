@@ -372,9 +372,6 @@ class Compiler:
       proc = subprocess.Popen(['php', '-d', 'memory_limit=256M', 'www/app/console', 'cache:warmup', '--no-debug', '--no-interaction',  '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
 
-      self.logger.log('OK')
-      sys.exit(0)
-
       self.logger.log('Remove app_*.php files')
       for filename in glob.glob('www/web/app_*.php') :
         #FIXME temporary omission to keep app_debg.php (activated profiler)
