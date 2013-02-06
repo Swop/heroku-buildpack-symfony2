@@ -374,6 +374,19 @@ class Compiler:
       proc = subprocess.Popen(['php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:warmup', '--no-debug', '--no-interaction',  '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
 
+      self.logger.log('Replace temporary application path to real one in cached files')
+      current_app_dir = self._bp.build_dir + '/www'
+      current_app_dir_escaped = current_app_dir.replace("/","\\/")
+      target_app_dir = '/app/www'
+      target_app_dir_escaped = target_app_dir.replace("/","\\/")
+
+      current_cache_dir = current_app_dir + '/app/cache'
+      proc_replace = subprocess.Popen(
+        'find '+current_cache_dir+' -type f -exec sed -i \'s/'+current_app_dir_escaped+'/'+target_app_dir_escaped+'/g\' {} \;',
+        shell=True
+      )
+      proc_replace.wait()
+
       self.logger.log('Remove app_*.php files')
       for filename in glob.glob('www/web/app_*.php') :
         #FIXME temporary omission to keep app_debg.php (activated profiler)
