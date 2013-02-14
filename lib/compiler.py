@@ -267,6 +267,8 @@ class Compiler:
         os.symlink(self._bp.build_dir+'/vendor/node', '/app/vendor/node')
       if not os.path.isdir('/app/node_modules'):
         os.symlink(self._bp.build_dir+'/node_modules', '/app/node_modules')
+      if not os.path.isdir('/app/www'):
+        os.symlink(self._bp.build_dir+'/www', '/app/www')
 
 
       myenv = dict(os.environ)
@@ -360,12 +362,30 @@ class Compiler:
 
       self.logger.log('Install assets')
       sys.stdout.flush()
-      proc = subprocess.Popen(['php', 'www/app/console', 'assets:install', 'www/web', '--env='+self._bp.sf_env], env=myenv)
+      proc = subprocess.Popen(['php', '/app/www/app/console', 'assets:install', 'www/web', '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
       self.logger.log('Process Assetic dump')
       sys.stdout.flush()
-      proc = subprocess.Popen(['php', 'www/app/console', 'assetic:dump', '--no-debug', '--env='+self._bp.sf_env], env=myenv)
+      proc = subprocess.Popen(['php', '/app/www/app/console', 'assetic:dump', '--no-debug', '--env='+self._bp.sf_env], env=myenv)
       proc.wait()
+
+      self.logger.log('Warming up the cache')
+      sys.stdout.flush()
+      proc = subprocess.Popen(['php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:warmup', '--no-debug', '--no-interaction',  '--env='+self._bp.sf_env], env=myenv)
+      proc.wait()
+
+      self.logger.log('Replace temporary application path to real one in cached files')
+      current_app_dir = self._bp.build_dir + '/www'
+      current_app_dir_escaped = current_app_dir.replace("/","\\/")
+      target_app_dir = '/app/www'
+      target_app_dir_escaped = target_app_dir.replace("/","\\/")
+
+      current_cache_dir = current_app_dir + '/app/cache'
+      proc_replace = subprocess.Popen(
+        'find '+current_cache_dir+' -type f -exec sed -i \'s/'+current_app_dir_escaped+'/'+target_app_dir_escaped+'/g\' {} \;',
+        shell=True
+      )
+      proc_replace.wait()
 
       self.logger.log('Remove app_*.php files')
       for filename in glob.glob('www/web/app_*.php') :

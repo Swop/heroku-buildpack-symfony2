@@ -33,13 +33,17 @@ class App:
         self.logger.increase_indentation()
 
         self.logger.log("Create write-able cache directory")
-        if os.path.isdir(self._app_dir+'/cache'):
-            shutil.rmtree(self._app_dir+'/cache')
-
         if os.path.isdir('/tmp/sf-cache'):
             shutil.rmtree('/tmp/sf-cache')
 
-        os.mkdir('/tmp/sf-cache')
+        # If cache files were generated during slug compilation, we place them
+        # into the new cache folder
+        if os.path.isdir(self._app_dir+'/cache'):
+            shutil.move(self._app_dir+'/cache', '/tmp')
+            os.rename('/tmp/cache', '/tmp/sf-cache')
+        else:
+            os.mkdir('/tmp/sf-cache')
+
         os.symlink('/tmp/sf-cache', self._app_dir+'/cache')
 
         self.logger.log("Enabled Sf2 logging system")
@@ -186,10 +190,10 @@ class App:
         #proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:clear', '--no-debug', '--env='+sf_env], env=myenv)
         #proc.wait()
 
-        self.logger.log('Warming up the cache')
-        sys.stdout.flush()
-        proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:warmup', '--no-debug', '--no-interaction',  '--env='+sf_env], env=myenv)
-        proc.wait()
+        #self.logger.log('Warming up the cache')
+        #sys.stdout.flush()
+        #proc = subprocess.Popen(['/app/vendor/php/bin/php', '-d', 'memory_limit=256M', '/app/www/app/console', 'cache:warmup', '--no-debug', '--no-interaction',  '--env='+sf_env], env=myenv)
+        #proc.wait()
 
         self.logger.decrease_indentation()
         self.logger.log("Application started!")
